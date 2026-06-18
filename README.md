@@ -1,3 +1,4 @@
+[README.md](https://github.com/user-attachments/files/29105086/README.md)
 # Agent-Driven Fault Lifecycle
 
 Architecture documentation for a shared lifecycle platform that coordinates validation, operational correction, aggregation, and grouping of renewable-energy fault events.
@@ -55,6 +56,82 @@ The platform is shaped by explicit ownership boundaries, transactional consisten
 
 ---
 
+## Ownership Model
+
+Agents and operators own log-level outcomes. The platform owns aggregate lifecycle state.
+
+```mermaid
+flowchart TD
+    subgraph agents["Agents & operators"]
+        VA["Validation Agent"]
+        INV["Investigation"]
+        HO["Human Override"]
+    end
+
+    FL["FaultLog"]
+
+    subgraph platform["Shared lifecycle platform"]
+        FS["FaultStatus (FS)"]
+        FSV["FaultStatusValidated (FSV)"]
+    end
+
+    VA --> FL
+    INV --> FL
+    HO --> FL
+
+    FL -.->|"membership reference"| FS
+    FS --> FSV
+
+    MAT["Materialization boundary"] -.-> platform
+```
+
+| Owner | Domain |
+|-------|--------|
+| **Agents & operators** | FaultLog — validation fields, operational fields, audit metadata |
+| **Platform** | FS — operational lifecycle aggregates |
+| **Platform** | FSV — validation status, actionable, grouping links, feedback |
+
+---
+
+## Transaction Flow
+
+Phases of a lifecycle mutation and the consistency guarantees at each boundary.
+
+```mermaid
+flowchart TD
+    PRE["Pre-transaction<br/><i>reads & route determination</i>"]
+
+    PRE --> TXN["Primary transaction"]
+
+    subgraph TXN["Primary transaction"]
+        direction TB
+        LOG["Persist validation fields"]
+        BODY["Route body or noop"]
+        RECOMP["Canonical recompute<br/><i>conditional</i>"]
+        SYNC["FS ↔ FSV sync"]
+
+        LOG --> BODY
+        BODY --> RECOMP
+        RECOMP --> SYNC
+    end
+
+    TXN --> COMMIT["Commit"]
+    COMMIT --> POST["Post-commit grouping"]
+
+    style PRE fill:#f5f5f5
+    style COMMIT fill:#e8f5e9
+    style POST fill:#fff3e0
+```
+
+| Phase | Consistency |
+|-------|-------------|
+| **Pre-transaction** | Read-only preparation; route fixed before any write |
+| **Primary transaction** | Log, FS, and FSV mutate atomically |
+| **Commit** | Per-lifecycle state is durable and internally consistent |
+| **Post-commit grouping** | Eventual; failures do not roll back committed mutation |
+
+---
+
 ## Architecture documentation
 
 | Document | Description |
@@ -63,17 +140,6 @@ The platform is shaped by explicit ownership boundaries, transactional consisten
 | [Lifecycle Platform](docs/lifecycle-platform.md) | Shared materialization platform — ownership, routing, scenarios, grouping semantics |
 | [Transaction Model](docs/transaction-model.md) | How consistency is maintained — phases, routes, commit guarantees, failure semantics |
 | [Design Principles](docs/design-principles.md) | Architectural rules — source of truth, materialization boundaries, idempotency, ownership |
-
----
-
-## Diagrams
-
-| Diagram | Description |
-|---------|-------------|
-| [System Overview](diagrams/system-overview.md) | Producers → platform → FaultLog → FS → FSV |
-| [Materialization Flow](diagrams/materialization-flow.md) | Outcome → route selection → FS/FSV → grouping |
-| [Transaction Flow](diagrams/transaction-flow.md) | Pre-transaction → primary transaction → commit → post-commit grouping |
-| [Ownership Model](diagrams/ownership-model.md) | Agent vs platform write domains |
 
 ---
 
