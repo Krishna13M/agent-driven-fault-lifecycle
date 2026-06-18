@@ -12,8 +12,8 @@ If you're new to the repository:
 
 1. Read this README
 2. Read [Architecture Overview](docs/architecture.md)
-3. Read [Validation Agent](docs/validation-agent.md)
-4. Read [Lifecycle Platform](docs/lifecycle-platform.md)
+3. Read [Lifecycle Platform](docs/lifecycle-platform.md)
+4. Read [Validation Agent](docs/validation-agent.md)
 5. Read [Transaction Model](docs/transaction-model.md)
 6. Read [Design Principles](docs/design-principles.md)
 
