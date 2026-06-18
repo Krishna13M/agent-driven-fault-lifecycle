@@ -1,4 +1,3 @@
-[validation-agent.md](https://github.com/user-attachments/files/29105360/validation-agent.md)
 # Validation Agent
 
 Architecture of the validation agent — decision generation, validation workflow, ownership boundaries, and materialization handoff.
