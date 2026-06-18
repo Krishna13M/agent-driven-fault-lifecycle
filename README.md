@@ -1,4 +1,3 @@
-[README.md](https://github.com/user-attachments/files/29105086/README.md)
 # Agent-Driven Fault Lifecycle
 
 Architecture documentation for a shared lifecycle platform that coordinates validation, operational correction, aggregation, and grouping of renewable-energy fault events.
@@ -8,10 +7,11 @@ Architecture documentation for a shared lifecycle platform that coordinates vali
 If you're new to the repository:
 
 1. Read this README
-2. Read [Validation Agent](docs/validation-agent.md)
-3. Read [Lifecycle Platform](docs/lifecycle-platform.md)
-4. Read [Transaction Model](docs/transaction-model.md)
-5. Read [Design Principles](docs/design-principles.md)
+2. Read [Architecture Overview](docs/architecture.md)
+3. Read [Validation Agent](docs/validation-agent.md)
+4. Read [Lifecycle Platform](docs/lifecycle-platform.md)
+5. Read [Transaction Model](docs/transaction-model.md)
+6. Read [Design Principles](docs/design-principles.md)
 
 ## Key Architectural Ideas
 
@@ -136,6 +136,7 @@ flowchart TD
 
 | Document | Description |
 |----------|-------------|
+| [Architecture Overview](docs/architecture.md) | How the documentation fits together — read order and layer map |
 | [Validation Agent](docs/validation-agent.md) | Decision generation, validation workflow, ownership boundaries, and materialization handoff |
 | [Lifecycle Platform](docs/lifecycle-platform.md) | Shared materialization platform — ownership, routing, scenarios, grouping semantics |
 | [Transaction Model](docs/transaction-model.md) | How consistency is maintained — phases, routes, commit guarantees, failure semantics |
@@ -148,6 +149,7 @@ flowchart TD
 ```text
 README.md                   ← documentation hub (this file)
 docs/
+  architecture.md
   validation-agent.md
   lifecycle-platform.md
   transaction-model.md
