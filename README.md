@@ -1,5 +1,9 @@
 # Agent-Driven Fault Lifecycle
 
+> This repository is an architecture case study derived from production systems used for renewable-energy fault lifecycle management.
+>
+> Implementation details, infrastructure, and proprietary business logic have been generalized while preserving the architectural patterns and design decisions.
+
 Architecture documentation for a shared lifecycle platform that coordinates validation, operational correction, aggregation, and grouping of renewable-energy fault events.
 
 ## Start Here
@@ -22,6 +26,33 @@ If you're new to the repository:
 - Canonical recomputation favors correctness over delta patching
 - Grouping is eventually consistent
 
+Agents and operators write to **FaultLog**. The platform materializes **FS** and **FSV**.
+
+```mermaid
+flowchart TD
+    subgraph agents["Agents & operators"]
+        VA["Validation Agent"]
+        INV["Investigator Agent"]
+        HO["Human Override"]
+    end
+
+    FL["FaultLog"]
+
+    subgraph platform["Shared lifecycle platform"]
+        FS["FaultStatus (FS)"]
+        FSV["FaultStatusValidated (FSV)"]
+    end
+
+    VA --> FL
+    INV --> FL
+    HO --> FL
+
+    FL -.->|"membership reference"| FS
+    FS --> FSV
+
+    MAT["Materialization boundary"] -.-> platform
+```
+
 ---
 
 ## How the system works
@@ -43,7 +74,7 @@ Logs link to lifecycles by membership reference. FS and FSV are derived views �
 | Producer | Role |
 |----------|------|
 | Validation Agent | Classifies detections as valid, invalid, or inconclusive |
-| Investigation | Applies operational corrections (occurrences, loss, dates, metadata) |
+| Investigator Agent | Applies operational corrections (occurrences, loss, dates, metadata) |
 | Human override | Operator validation with attribution |
 
 None of these producers own aggregate topology. Every path converges on the **shared lifecycle platform**, which routes, aggregates, synchronizes, and groups under uniform rules. Equivalent log fields and validation outcomes produce equivalent downstream state regardless of origin (**agent parity**).
@@ -53,43 +84,6 @@ None of these producers own aggregate topology. Every path converges on the **sh
 **Grouping** runs after commit. Related valid, active faults cluster under parent records to reduce alert noise. Grouping is eventual — per-lifecycle state is correct at commit; parent-child links may lag briefly and are retried on subsequent lifecycle events.
 
 The platform is shaped by explicit ownership boundaries, transactional consistency at commit, deterministic recomputation, idempotent safe-retry primitives, and auditability for automated mutations.
-
----
-
-## Ownership Model
-
-Agents and operators own log-level outcomes. The platform owns aggregate lifecycle state.
-
-```mermaid
-flowchart TD
-    subgraph agents["Agents & operators"]
-        VA["Validation Agent"]
-        INV["Investigation"]
-        HO["Human Override"]
-    end
-
-    FL["FaultLog"]
-
-    subgraph platform["Shared lifecycle platform"]
-        FS["FaultStatus (FS)"]
-        FSV["FaultStatusValidated (FSV)"]
-    end
-
-    VA --> FL
-    INV --> FL
-    HO --> FL
-
-    FL -.->|"membership reference"| FS
-    FS --> FSV
-
-    MAT["Materialization boundary"] -.-> platform
-```
-
-| Owner | Domain |
-|-------|--------|
-| **Agents & operators** | FaultLog — validation fields, operational fields, audit metadata |
-| **Platform** | FS — operational lifecycle aggregates |
-| **Platform** | FSV — validation status, actionable, grouping links, feedback |
 
 ---
 
