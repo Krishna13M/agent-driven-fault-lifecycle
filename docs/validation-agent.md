@@ -1,3 +1,4 @@
+[validation-agent.md](https://github.com/user-attachments/files/29105360/validation-agent.md)
 # Validation Agent
 
 Architecture of the validation agent — decision generation, validation workflow, ownership boundaries, and materialization handoff.
@@ -87,7 +88,7 @@ Validation and investigation are orthogonal concerns on the same log:
 
 ## Related documents
 
-- [Lifecycle Platform](internal/lifecycle-platform.md) — shared materialization platform
+- [Lifecycle Platform](lifecycle-platform.md) — shared materialization platform
 - [Transaction Model](transaction-model.md) — consistency guarantees at the handoff boundary
 - [Design Principles](design-principles.md) — agent parity and materialization boundaries
-- [System Brain](internal/system-brain.md) — full architecture reference
+- [Documentation hub](../README.md) — start here and navigation
